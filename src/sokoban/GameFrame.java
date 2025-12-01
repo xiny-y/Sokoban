@@ -104,7 +104,7 @@ public class GameFrame extends JFrame {
                 if (line.isEmpty()) continue;
                 String[] numbers = line.split("\\s+");
                 for (int j = 0; j < Math.min(numbers.length, map[i].length); j++) {
-                    map[i][j] = Integer.parseInt(numbers[j]);
+                    map[i][j] = Integer.parseInt(numbers[j]);//parseInt 将字符串转换为整数
                     if (map[i][j] == 5) {
                         px = i;
                         py = j;

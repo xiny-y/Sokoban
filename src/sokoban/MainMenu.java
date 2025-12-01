@@ -12,8 +12,6 @@ public class MainMenu extends JFrame {
     private JButton startButton;
     private JButton levelSelectButton;
     private JButton exitButton;
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
 
     public MainMenu() {
 

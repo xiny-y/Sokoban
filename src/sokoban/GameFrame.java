@@ -1,7 +1,6 @@
 package sokoban;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -10,7 +9,7 @@ import java.io.*;
 
 public class GameFrame extends JFrame {
     private static final String IMAGE_PATH = "resources/";
-    private static final String MAP_PATH = "src/map/";
+    private static final String MAP_PATH = "map/";
     private int px, py;
     private int[][] map ;
     public GameFrame(int level) {
@@ -83,36 +82,40 @@ public class GameFrame extends JFrame {
         });
         this.setFocusable(true);//获取焦点
     }
-    private  void loadMap(int level) {
+    private void loadMap(int level) {
         map = new int[6][8];
-        String filePath = MAP_PATH +  level + ".txt";
-        try (FileReader fr = new FileReader(filePath);
-             BufferedReader reader = new BufferedReader(fr)) {
+        String resourcePath = MAP_PATH + level + ".txt";
 
-            StringBuilder content = new StringBuilder();
-            char[] chs = new char[1024];
-            int len;
-
-            // 读取文件所有内容
-            while ((len = fr.read(chs)) != -1) {
-                content.append(chs, 0, len);
+        BufferedReader reader = null;
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
+            if (is != null) {
+                reader = new BufferedReader(new InputStreamReader(is));
+            } else {
+                // fallback: relative to working directory (用于调试或运行时工作目录包含 map 文件夹)
+                String filePath = resourcePath;
+                reader = new BufferedReader(new FileReader(filePath));
             }
 
-            // 解析内容到map数组
-            String[] lines = content.toString().split("\n");
-            for (int i = 0; i < map.length; i++) {
-                String[] numbers = lines[i].trim().split("\\s+");
-                for (int j = 0; j < map[i].length; j++) {
+            String line;
+            int i = 0;
+            while ((line = reader.readLine()) != null && i < map.length) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                String[] numbers = line.split("\\s+");
+                for (int j = 0; j < Math.min(numbers.length, map[i].length); j++) {
                     map[i][j] = Integer.parseInt(numbers[j]);
                     if (map[i][j] == 5) {
                         px = i;
                         py = j;
                     }
                 }
+                i++;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try { if (reader != null) reader.close(); } catch (IOException ignored) {}
         }
     }
 

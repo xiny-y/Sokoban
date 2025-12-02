@@ -60,7 +60,22 @@ public class GameFrame extends JFrame {
         this.getContentPane().removeAll();//删除所有组件
         initImage();//重新绘制图片和菜单
         this.repaint();//刷新界面
+        checkWin();
 
+    }
+    private void checkWin() {
+        //检查所有箱子是否都在目标位置
+        for (int b = 0; b < boxPositions.length; b++) {
+            int x = boxPositions[b][0];
+            int y = boxPositions[b][1];
+            if (map[x][y] != 9) {
+                return; //有箱子不在目标位置，未获胜
+            }
+        }
+        //所有箱子都在目标位置，获胜
+        JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
+        this.dispose();//关闭当前游戏窗口
+        new MainMenu();//返回主菜单
     }
     private void initMoveAction(){
         //捕获键盘按键

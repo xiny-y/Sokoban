@@ -12,6 +12,9 @@ public class GameFrame extends JFrame {
     private static final String MAP_PATH = "map/";
     private int px, py;
     private int[][] map ;
+    //最多四个箱子，箱子坐标
+    private int[][] boxPositions;
+
     public GameFrame(int level) {
 
         initFrame();//初始化窗口
@@ -26,26 +29,34 @@ public class GameFrame extends JFrame {
     }
     private void movePlayer(int dx, int dy) {
         int newX  = px + dx, newY = py + dy;
+        //检查新位置是否为墙
         if (map[newX][newY] == 1) {
-            return;
+            return; //不能移动
         }
-        if(map[newX][newY] == 8){
-            int boxX = newX + dx, boxY = newY + dy;
-            if (map[boxX][boxY] == 1 || map[boxX][boxY] == 8) {
-                return;
+        //检查是否有箱子
+        for (int b = 0; b < boxPositions.length; b++) {
+            if (newX == boxPositions[b][0] && newY == boxPositions[b][1]) {
+                //计算箱子的新位置
+                int boxNewX = boxPositions[b][0] + dx;
+                int boxNewY = boxPositions[b][1] + dy;
+                //检查箱子新位置是否为墙或其他箱子
+                if (map[boxNewX][boxNewY] == 1) {
+                    return; //箱子不能移动
+                }
+                for (int bb = 0; bb < boxPositions.length; bb++) {
+                    if (bb != b && boxNewX == boxPositions[bb][0] && boxNewY == boxPositions[bb][1]) {
+                        return; //箱子不能移动
+                    }
+                }
+                //移动箱子
+                boxPositions[b][0] = boxNewX;
+                boxPositions[b][1] = boxNewY;
+                break;
             }
-            map[newX][newY] = 5;
-            map[boxX][boxY] = 8;
-            map[px][py] = 0;
-            px = newX;
-            py = newY;
         }
-        else{
-            map[newX][newY] = 5;
-            map[px][py] = 0;
-            px = newX;
-            py = newY;
-        }
+        //移动玩家
+        px = newX;
+        py = newY;
         this.getContentPane().removeAll();//删除所有组件
         initImage();//重新绘制图片和菜单
         this.repaint();//刷新界面
@@ -83,6 +94,8 @@ public class GameFrame extends JFrame {
         this.setFocusable(true);//获取焦点
     }
     private void loadMap(int level) {
+        //第一行为人物坐标，第二行为箱子个数num_box，2~num_box+1行为箱子坐标，剩下为地图
+
         map = new int[6][8];
         String resourcePath = MAP_PATH + level + ".txt";
 
@@ -99,16 +112,33 @@ public class GameFrame extends JFrame {
 
             String line;
             int i = 0;
+            //人物
+            if ((line = reader.readLine()) != null) {
+                String[] parts = line.trim().split("\\s+");
+                px = Integer.parseInt(parts[0]);
+                py = Integer.parseInt(parts[1]);
+            }
+            //箱子个数
+            int numBox = 0;
+            if((line = reader.readLine()) != null) {
+                numBox = Integer.parseInt(line.trim());
+            }
+            boxPositions = new int[numBox][2];
+            for (int b = 0; b < numBox; b++) {
+                if ((line = reader.readLine()) != null) {
+                    String[] parts = line.trim().split("\\s+");
+                    boxPositions[b][0] = Integer.parseInt(parts[0]);
+                    boxPositions[b][1] = Integer.parseInt(parts[1]);
+                }
+            }
+            //箱子坐标
+
             while ((line = reader.readLine()) != null && i < map.length) {
                 line = line.trim();
                 if (line.isEmpty()) continue;
                 String[] numbers = line.split("\\s+");
                 for (int j = 0; j < Math.min(numbers.length, map[i].length); j++) {
                     map[i][j] = Integer.parseInt(numbers[j]);//parseInt 将字符串转换为整数
-                    if (map[i][j] == 5) {
-                        px = i;
-                        py = j;
-                    }
                 }
                 i++;
             }
@@ -195,15 +225,23 @@ public class GameFrame extends JFrame {
                     case 1:
                         imageName = "wall";
                         break;
-                    case 5:
-                        imageName = "player";
-                        break;
-                    case 8:
-                        imageName = "box";
-                        break;
                     case 9:
                         imageName = "target";
                         break;
+                }
+                if (i == px && j == py) {
+                    imageName = "player";
+                } 
+                else {
+                    for (int b = 0; b < boxPositions.length; b++) {
+                        if (i == boxPositions[b][0] && j == boxPositions[b][1]) {
+                            imageName = "box";
+                            if(map[i][j] == 9){
+                                imageName = "box_correct";
+                            }
+                            break;
+                        }
+                    }
                 }
                 imageName += ".png";
                 java.net.URL imgURL = getClass().getClassLoader().getResource(IMAGE_PATH + imageName);

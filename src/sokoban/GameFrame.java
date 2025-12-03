@@ -14,6 +14,7 @@ public class GameFrame extends JFrame {
     private int[][] map ;
     //最多四个箱子，箱子坐标
     private int[][] boxPositions;
+    private int currentLevel;
 
     public GameFrame(int level) {
 
@@ -21,7 +22,9 @@ public class GameFrame extends JFrame {
 
         initMoveAction();//添加键盘监听
 
-        loadMap(level);//加载地图
+        this.currentLevel = level;
+
+        loadMap(currentLevel);//加载地图
 
         initImage();//初始化图片和菜单
 
@@ -74,8 +77,10 @@ public class GameFrame extends JFrame {
         }
         //所有箱子都在目标位置，获胜
         JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
+        //next level
         this.dispose();//关闭当前游戏窗口
-        new MainMenu();//返回主菜单
+        new GameFrame(currentLevel + 1);//进入下一关
+        //new MainMenu();//返回主菜单
     }
     private void initMoveAction(){
         //捕获键盘按键

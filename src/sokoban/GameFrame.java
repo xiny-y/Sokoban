@@ -10,6 +10,7 @@ import java.io.*;
 public class GameFrame extends JFrame {
     private static final String IMAGE_PATH = "resources/";
     private static final String MAP_PATH = "map/";
+    private static final int MAX_LEVEL = 3;
     private int px, py;
     private int[][] map ;
     //最多四个箱子，箱子坐标
@@ -75,12 +76,18 @@ public class GameFrame extends JFrame {
                 return; //有箱子不在目标位置，未获胜
             }
         }
+
         //所有箱子都在目标位置，获胜
-        JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
-        //next level
-        this.dispose();//关闭当前游戏窗口
-        new GameFrame(currentLevel + 1);//进入下一关
-        //new MainMenu();//返回主菜单
+        if(currentLevel < MAX_LEVEL){
+            JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
+            this.dispose();//关闭当前游戏窗口
+            new GameFrame(currentLevel + 1);//进入下一关
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "恭喜你，完成了所有关卡！");
+            this.dispose();//关闭当前游戏窗口
+            new MainMenu();//返回主菜单
+        }
     }
     private void initMoveAction(){
         //捕获键盘按键
@@ -186,15 +193,21 @@ public class GameFrame extends JFrame {
 
     private void MenuDialog() {
 
-        JDialog menuDialog = new JDialog(this, "菜单", true); // modal dialog
-        menuDialog.setSize(300, 200);
+        JDialog menuDialog = new JDialog(this, "菜单", true);
+        menuDialog.setSize(300, 150);
         menuDialog.setLayout(null);//使用绝对布局
         menuDialog.setLocationRelativeTo(this);//居中显示
         menuDialog.setUndecorated(true);//删除标题栏
 
+
         JButton backButton = new JButton("返回游戏");
-        backButton.setBounds(100, 50, 100, 30);
+        backButton.setBounds(100, 20, 100, 30);
         menuDialog.add(backButton);
+
+        JButton restartButton = new JButton("重新开始");
+        restartButton.setBounds(100, 60, 100, 30);
+        menuDialog.add(restartButton);
+        
         JButton exitButton = new JButton("主菜单");
         exitButton.setBounds(100, 100, 100, 30);
         menuDialog.add(exitButton);
@@ -208,6 +221,14 @@ public class GameFrame extends JFrame {
                 GameFrame.this.setEnabled(true);
                 GameFrame.this.requestFocus();
                 menuDialog.dispose();
+            }
+        });
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuDialog.dispose();
+                GameFrame.this.dispose();//关闭菜单
+                new GameFrame(currentLevel);//重新开始当前关卡
             }
         });
         exitButton.addActionListener(new ActionListener() {

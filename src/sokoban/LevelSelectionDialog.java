@@ -6,9 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * 关卡选择对话框
- */
+
 public class LevelSelectionDialog extends JDialog {
     private JButton[] levelButtons;
     private JButton backButton;
@@ -39,7 +37,6 @@ public class LevelSelectionDialog extends JDialog {
     private void setupLayout() {
         setLayout(new BorderLayout());
 
-        // 关卡按钮网格
         JPanel levelPanel = new JPanel(new GridLayout(3, 3, 10, 10));
         levelPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -49,7 +46,6 @@ public class LevelSelectionDialog extends JDialog {
 
         add(levelPanel, BorderLayout.CENTER);
 
-        // 底部按钮
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.add(backButton);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 20));

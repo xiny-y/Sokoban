@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.plaf.basic.BasicButtonUI;
+import java.awt.geom.RoundRectangle2D;
 
 
 public class LevelSelectionDialog extends JDialog {
@@ -16,6 +18,7 @@ public class LevelSelectionDialog extends JDialog {
         initializeComponents();//初始化组件
         setupLayout();//设置布局
         setupEventHandlers();
+        setUndecorated(true);//去除边框
         setSize(600, 400);
         setLocationRelativeTo(parent);
     }
@@ -32,6 +35,34 @@ public class LevelSelectionDialog extends JDialog {
         backButton = new JButton("返回");
         backButton.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         backButton.setPreferredSize(new Dimension(100, 40));
+
+        // 自定义按钮外观
+        JButton[] buttons = new JButton[levelButtons.length + 1];
+        System.arraycopy(levelButtons, 0, buttons, 0, levelButtons.length);
+        buttons[buttons.length - 1] = backButton;
+
+        for (JButton button : buttons) {
+            button.setUI(new BasicButtonUI() {
+                @Override
+                public void paint(Graphics g, JComponent c) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    // 绘制浅色圆角矩形背景
+                    GradientPaint gradient = new GradientPaint(0, 0, new Color(173, 216, 230), 0, c.getHeight(), new Color(224, 255, 255));
+                    g2.setPaint(gradient);
+                    g2.fill(new RoundRectangle2D.Float(0, 0, c.getWidth(), c.getHeight(), 30, 30));
+
+                    // 绘制按钮文字
+                    super.paint(g, c);
+                }
+            });
+            button.setOpaque(false);
+            button.setContentAreaFilled(false);
+            button.setBorderPainted(false);
+            button.setFocusPainted(false);
+            button.setForeground(Color.DARK_GRAY);
+        }
     }
 
     private void setupLayout() {

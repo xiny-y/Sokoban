@@ -4,10 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.Color;
-import java.awt.GradientPaint;
 
 /**
  * 游戏主菜单界面
@@ -51,29 +47,9 @@ public class MainMenu extends JFrame {
         exitButton.setPreferredSize(new Dimension(300, 70));
 
         // 自定义按钮外观
-        JButton[] buttons = {startButton, levelSelectButton, exitButton};
-        for (JButton button : buttons) {
-            button.setUI(new BasicButtonUI() {
-                @Override
-                public void paint(Graphics g, JComponent c) {
-                    Graphics2D g2 = (Graphics2D) g;
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                    // 绘制浅色圆角矩形背景
-                    GradientPaint gradient = new GradientPaint(0, 0, new Color(173, 216, 230), 0, c.getHeight(), new Color(224, 255, 255));
-                    g2.setPaint(gradient);
-                    g2.fill(new RoundRectangle2D.Float(0, 0, c.getWidth(), c.getHeight(), 30, 30));
-
-                    // 绘制按钮文字
-                    super.paint(g, c);
-                }
-            });
-            button.setOpaque(false);
-            button.setContentAreaFilled(false);
-            button.setBorderPainted(false);
-            button.setFocusPainted(false);
-            button.setForeground(Color.DARK_GRAY);
-        }
+        styleButton.applyStyle(startButton);
+        styleButton.applyStyle(levelSelectButton);
+        styleButton.applyStyle(exitButton);
     }
 
     private void setupLayout() {

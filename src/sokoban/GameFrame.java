@@ -1,6 +1,7 @@
 package sokoban;
 
 import javax.swing.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -18,16 +19,15 @@ public class GameFrame extends JFrame {
     private int currentLevel;
 
     public GameFrame(int level) {
-
-        initFrame();//初始化窗口
-
-        initMoveAction();//添加键盘监听
-
         this.currentLevel = level;
 
-        loadMap(currentLevel);//加载地图
+        loadMap(currentLevel); // 加载地图
 
-        initImage();//初始化图片和菜单
+        initFrame(); // 初始化窗口
+
+        initMoveAction(); // 添加键盘监听
+
+        initImage(); // 初始化图片和菜单
 
         this.setVisible(true);
     }
@@ -126,22 +126,12 @@ public class GameFrame extends JFrame {
         map = new int[6][8];
         String resourcePath = MAP_PATH + level + ".txt";
 
-        BufferedReader reader = null;
-        try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
-            if (is != null) {
-                reader = new BufferedReader(new InputStreamReader(is));
-            } else {
-                // fallback: relative to working directory (用于调试或运行时工作目录包含 map 文件夹)
-                String filePath = resourcePath;
-                reader = new BufferedReader(new FileReader(filePath));
-            }
-
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourcePath))))
+        {
             String line;
-            int i = 0;
             //人物
             if ((line = reader.readLine()) != null) {
-                String[] parts = line.trim().split("\\s+");
+                String[] parts = line.trim().split("\\s+");//按空格分割
                 px = Integer.parseInt(parts[0]);
                 py = Integer.parseInt(parts[1]);
             }
@@ -150,6 +140,7 @@ public class GameFrame extends JFrame {
             if((line = reader.readLine()) != null) {
                 numBox = Integer.parseInt(line.trim());
             }
+            //箱子坐标
             boxPositions = new int[numBox][2];
             for (int b = 0; b < numBox; b++) {
                 if ((line = reader.readLine()) != null) {
@@ -158,11 +149,10 @@ public class GameFrame extends JFrame {
                     boxPositions[b][1] = Integer.parseInt(parts[1]);
                 }
             }
-            //箱子坐标
 
+            int i = 0;
             while ((line = reader.readLine()) != null && i < map.length) {
                 line = line.trim();
-                if (line.isEmpty()) continue;
                 String[] numbers = line.split("\\s+");
                 for (int j = 0; j < Math.min(numbers.length, map[i].length); j++) {
                     map[i][j] = Integer.parseInt(numbers[j]);//parseInt 将字符串转换为整数
@@ -171,13 +161,19 @@ public class GameFrame extends JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try { if (reader != null) reader.close(); } catch (IOException ignored) {}
         }
+
+        // 根据地图动态设置窗口大小
+        int mapWidth = map[0].length; // 地图的列数
+        int mapHeight = map.length;  // 地图的行数
+        int tileSize = 100; // 每个格子的大小（像素）
+        this.setSize(mapWidth * tileSize, mapHeight * tileSize + 50); // 设置窗口大小
+        this.setLocationRelativeTo(null); // 窗口居中显示
     }
 
     private void initMenuButton() {
         JButton menuButton = new JButton("菜单");
+        styleButton.applyStyle(menuButton);
         menuButton.setBounds(700, 15, 70, 30);
         //点击菜单弹出小界面
         menuButton.addActionListener(new ActionListener() {
@@ -213,6 +209,9 @@ public class GameFrame extends JFrame {
         menuDialog.add(exitButton);
 
 
+        styleButton.applyStyle(backButton);
+        styleButton.applyStyle(restartButton);
+        styleButton.applyStyle(exitButton);
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -246,8 +245,6 @@ public class GameFrame extends JFrame {
     private void initFrame() {
         this.setTitle("Sokoban V1.0");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//关闭窗口时退出程序
-        this.setSize(800, 650);
-        this.setLocationRelativeTo(null);//窗口居中显示
         this.setResizable(false);//窗口大小不可改变
         this.setLayout(null);//绝对布局
     }
@@ -298,4 +295,6 @@ public class GameFrame extends JFrame {
         }
 
     }
+
+    
 }

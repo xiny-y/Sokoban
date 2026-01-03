@@ -2,11 +2,13 @@ package sokoban;
 
 import javax.swing.*;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
+
 
 public class GameFrame extends JFrame {
     private static final String IMAGE_PATH = "resources/";
@@ -79,6 +81,7 @@ public class GameFrame extends JFrame {
 
         //所有箱子都在目标位置，获胜
         if(currentLevel < MAX_LEVEL){
+            
             JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
             this.dispose();//关闭当前游戏窗口
             new GameFrame(currentLevel + 1);//进入下一关
@@ -123,8 +126,8 @@ public class GameFrame extends JFrame {
     private void loadMap(int level) {
         //第一行为人物坐标，第二行为箱子个数num_box，2~num_box+1行为箱子坐标，剩下为地图
 
-        map = new int[6][8];
         String resourcePath = MAP_PATH + level + ".txt";
+        //int mapWidth = 6, mapHeight = 8;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourcePath))))
         {
@@ -149,12 +152,18 @@ public class GameFrame extends JFrame {
                     boxPositions[b][1] = Integer.parseInt(parts[1]);
                 }
             }
-
+            
+            // if((line = reader.readLine()) != null) {
+            //     String[] sizeParts = line.trim().split("\\s+");
+            //     mapHeight = Integer.parseInt(sizeParts[0]);
+            //     mapWidth = Integer.parseInt(sizeParts[1]);
+            // }
+            map = new int[6][8];
             int i = 0;
-            while ((line = reader.readLine()) != null && i < map.length) {
+            while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 String[] numbers = line.split("\\s+");
-                for (int j = 0; j < Math.min(numbers.length, map[i].length); j++) {
+                for (int j = 0; j < numbers.length; j++) {
                     map[i][j] = Integer.parseInt(numbers[j]);//parseInt 将字符串转换为整数
                 }
                 i++;
@@ -163,11 +172,10 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
 
+
         // 根据地图动态设置窗口大小
-        int mapWidth = map[0].length; // 地图的列数
-        int mapHeight = map.length;  // 地图的行数
         int tileSize = 100; // 每个格子的大小（像素）
-        this.setSize(mapWidth * tileSize, mapHeight * tileSize + 50); // 设置窗口大小
+        this.setSize(8 * tileSize, 6 * tileSize + 30); // 设置窗口大小
         this.setLocationRelativeTo(null); // 窗口居中显示
     }
 
@@ -247,6 +255,14 @@ public class GameFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//关闭窗口时退出程序
         this.setResizable(false);//窗口大小不可改变
         this.setLayout(null);//绝对布局
+
+        // 设置背景图片
+        java.net.URL BG_URL = getClass().getClassLoader().getResource("resources/background_game.png");
+        if (BG_URL != null) {
+            JLabel background = new JLabel(new ImageIcon(BG_URL));
+            background.setBounds(0, 0, 800, 600);
+            this.setContentPane(background);
+        }
     }
 
     private void initImage() {
@@ -280,6 +296,9 @@ public class GameFrame extends JFrame {
                             break;
                         }
                     }
+                }
+                if(imageName.equals("place")){
+                    continue;//空地不绘制图片
                 }
                 imageName += ".png";
                 java.net.URL imgURL = getClass().getClassLoader().getResource(IMAGE_PATH + imageName);

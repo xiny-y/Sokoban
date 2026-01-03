@@ -30,6 +30,7 @@ public class MainMenu extends JFrame {
         setSize(800, 600);
         setResizable(false);//窗口大小不可改变
         setLocationRelativeTo(null);//窗口居中显示
+        //setUndecorated(true);//去除边框
         setVisible(true);
     }
 

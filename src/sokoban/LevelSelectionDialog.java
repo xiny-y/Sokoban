@@ -50,8 +50,8 @@ public class LevelSelectionDialog extends JDialog {
 
                     // 绘制浅色圆角矩形背景
                     GradientPaint gradient = new GradientPaint(0, 0, new Color(173, 216, 230), 0, c.getHeight(), new Color(224, 255, 255));
-                    g2.setPaint(gradient);
-                    g2.fill(new RoundRectangle2D.Float(0, 0, c.getWidth(), c.getHeight(), 30, 30));
+                    g2.setPaint(gradient);//浅色渐变
+                    g2.fill(new RoundRectangle2D.Float(0, 0, c.getWidth(), c.getHeight(), 30, 30));//圆角矩形
 
                     // 绘制按钮文字
                     super.paint(g, c);

@@ -355,15 +355,7 @@ public class GameFrame extends JFrame {
                 JLabel label = new JLabel(new ImageIcon(imgURL));
                 label.setBounds(j * 100, i * 100, 100, 100);
                 this.add(label);
-
-//                JLabel label = new JLabel(new ImageIcon(IMAGE_PATH + imageName));
-//                label.setBounds(j * 100, i * 100, 100, 100);
-//                this.add(label);
-
             }
         }
-
     }
-
-    
 }

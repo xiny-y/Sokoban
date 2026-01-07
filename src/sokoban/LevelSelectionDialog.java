@@ -13,15 +13,15 @@ public class LevelSelectionDialog extends JDialog {
 
     public LevelSelectionDialog(Frame parent) {
         super(parent, "选择关卡", true);
-        initializeComponents();//初始化组件
+        initComponents();//初始化组件
         setupLayout();//设置布局
-        setupEventHandlers();
+        setupEventHandlers();//设置事件处理
         setUndecorated(true);//去除边框
         setSize(600, 400);
-        setLocationRelativeTo(parent);
+        setLocationRelativeTo(parent);//窗口居中显示
     }
 
-    private void initializeComponents() {
+    private void initComponents() {
         // 创建关卡按钮 (1-9关)
         levelButtons = new JButton[9];
         for (int i = 0; i < levelButtons.length; i++) {

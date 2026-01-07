@@ -1,13 +1,11 @@
-package sokoban;// GameMenu.java
+package sokoban;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * 游戏主菜单界面
- */
+//游戏主菜单界面
 public class MainMenu extends JFrame {
     private JButton startButton;
     private JButton levelSelectButton;
@@ -15,8 +13,7 @@ public class MainMenu extends JFrame {
 
     public MainMenu() {
 
-
-        initializeComponents();//初始化组件
+        initComponents();//初始化组件
         setupLayout();
         setupEventHandlers();
 
@@ -30,7 +27,7 @@ public class MainMenu extends JFrame {
         setVisible(true);
     }
 
-    private void initializeComponents() {
+    private void initComponents() {
         startButton = new JButton("开始游戏");
         levelSelectButton = new JButton("选择关卡");
         exitButton = new JButton("退出游戏");
@@ -66,7 +63,7 @@ public class MainMenu extends JFrame {
             background = new JLabel(new ImageIcon(BG_URL));
         }
         background.setBounds(0, 0, 800, 600);
-        layeredPane.add(background, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(background, JLayeredPane.DEFAULT_LAYER);// 添加背景到默认层
 
         // 标题面板
         JPanel titlePanel = new JPanel();
@@ -123,7 +120,7 @@ public class MainMenu extends JFrame {
 
 
     private void showLevelSelection() {
-        LevelSelectionDialog levelDialog = new LevelSelectionDialog(this);
+        LevelSelectionDialog levelDialog = new LevelSelectionDialog(this);//this指MainMenu
         levelDialog.setVisible(true);
     }
 

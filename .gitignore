@@ -27,3 +27,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+###忽略src\resources\others###
+src/resources/other

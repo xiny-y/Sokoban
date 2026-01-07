@@ -1,8 +1,7 @@
 package sokoban;
 
 import javax.swing.*;
-
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -13,7 +12,7 @@ import java.io.*;
 public class GameFrame extends JFrame {
     private static final String IMAGE_PATH = "resources/";
     private static final String MAP_PATH = "map/";
-    private static final int MAX_LEVEL = 3;
+    private static final int MAX_LEVEL = 9;
     private int px, py;
     private int[][] map ;
     //最多四个箱子，箱子坐标
@@ -81,15 +80,71 @@ public class GameFrame extends JFrame {
 
         //所有箱子都在目标位置，获胜
         if(currentLevel < MAX_LEVEL){
-            
-            JOptionPane.showMessageDialog(this, "恭喜你，过关了！");
-            this.dispose();//关闭当前游戏窗口
-            new GameFrame(currentLevel + 1);//进入下一关
+            JDialog levelDialog = new JDialog(this);
+            levelDialog.setSize(300, 120);
+            levelDialog.setLayout(null);//使用绝对布局
+            levelDialog.setLocationRelativeTo(this);
+            levelDialog.setUndecorated(true);//删除标题栏
+
+            JLabel messageLabel = new JLabel("恭喜你，过关了！", SwingConstants.CENTER);
+            messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+            messageLabel.setBounds(50, 20, 200, 30); // 调整位置
+            levelDialog.add(messageLabel);
+
+            JButton nextLevelButton = new JButton("下一关");
+            nextLevelButton.setBounds(50, 70, 80, 30);
+            styleButton.applyStyle(nextLevelButton);
+            nextLevelButton.addActionListener(e -> {
+                levelDialog.dispose();
+                this.dispose();
+                new GameFrame(currentLevel + 1);
+            });
+            levelDialog.add(nextLevelButton);
+
+            JButton exitButton = new JButton("主菜单");
+            exitButton.setBounds(170, 70, 80, 30);
+            styleButton.applyStyle(exitButton);
+            exitButton.addActionListener(e -> {
+                levelDialog.dispose();
+                this.dispose();
+                new MainMenu();
+            });
+            levelDialog.add(exitButton);
+
+            levelDialog.setVisible(true);
         }
         else{
-            JOptionPane.showMessageDialog(this, "恭喜你，完成了所有关卡！");
-            this.dispose();//关闭当前游戏窗口
-            new MainMenu();//返回主菜单
+            JDialog finishDialog = new JDialog(this, "游戏完成", true);
+            finishDialog.setSize(300, 120);
+            finishDialog.setLayout(null);
+            finishDialog.setLocationRelativeTo(this);
+            finishDialog.setUndecorated(true);
+
+            JLabel messageLabel = new JLabel("恭喜完成最后关卡！", SwingConstants.CENTER);
+            messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+            messageLabel.setBounds(20, 20, 240, 30); // 调整位置
+            finishDialog.add(messageLabel);
+
+            JButton mainMenuButton = new JButton("返回主菜单");
+            mainMenuButton.setBounds(40, 70, 100, 30);
+            styleButton.applyStyle(mainMenuButton);
+            mainMenuButton.addActionListener(e -> { //e 代表事件对象ActionEvent -> 事件源
+                finishDialog.dispose();
+                this.dispose();
+                new MainMenu();
+            });
+            finishDialog.add(mainMenuButton);
+
+            JButton quitGameButton = new JButton("退出游戏");
+            quitGameButton.setBounds(160, 70, 100, 30);
+            styleButton.applyStyle(quitGameButton);
+            quitGameButton.addActionListener(e -> { 
+                finishDialog.dispose();
+                System.exit(0);
+            });
+            finishDialog.add(quitGameButton);
+
+            finishDialog.setVisible(true);
         }
     }
     private void initMoveAction(){
@@ -127,7 +182,6 @@ public class GameFrame extends JFrame {
         //第一行为人物坐标，第二行为箱子个数num_box，2~num_box+1行为箱子坐标，剩下为地图
 
         String resourcePath = MAP_PATH + level + ".txt";
-        //int mapWidth = 6, mapHeight = 8;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourcePath))))
         {
@@ -153,11 +207,7 @@ public class GameFrame extends JFrame {
                 }
             }
             
-            // if((line = reader.readLine()) != null) {
-            //     String[] sizeParts = line.trim().split("\\s+");
-            //     mapHeight = Integer.parseInt(sizeParts[0]);
-            //     mapWidth = Integer.parseInt(sizeParts[1]);
-            // }
+            
             map = new int[6][8];
             int i = 0;
             while ((line = reader.readLine()) != null) {

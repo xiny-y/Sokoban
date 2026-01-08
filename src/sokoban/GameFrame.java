@@ -114,7 +114,7 @@ public class GameFrame extends JFrame {
             levelDialog.setVisible(true);
         }
         else{
-            JDialog finishDialog = new JDialog(this, "游戏完成", true);
+            JDialog finishDialog = new JDialog(this);
             finishDialog.setSize(300, 120);
             finishDialog.setLayout(null);
             finishDialog.setLocationRelativeTo(this);
@@ -207,7 +207,6 @@ public class GameFrame extends JFrame {
                 }
             }
             
-            
             map = new int[6][8];
             int i = 0;
             while ((line = reader.readLine()) != null) {
@@ -222,8 +221,6 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
 
-
-        // 根据地图动态设置窗口大小
         int tileSize = 100; // 每个格子的大小（像素）
         this.setSize(8 * tileSize, 6 * tileSize + 30); // 设置窗口大小
         this.setLocationRelativeTo(null); // 窗口居中显示
@@ -253,7 +250,6 @@ public class GameFrame extends JFrame {
         menuDialog.setLocationRelativeTo(this);//居中显示
         menuDialog.setUndecorated(true);//删除标题栏
 
-
         JButton backButton = new JButton("返回游戏");
         backButton.setBounds(100, 20, 100, 30);
         menuDialog.add(backButton);
@@ -265,7 +261,6 @@ public class GameFrame extends JFrame {
         JButton exitButton = new JButton("主菜单");
         exitButton.setBounds(100, 100, 100, 30);
         menuDialog.add(exitButton);
-
 
         styleButton.applyStyle(backButton);
         styleButton.applyStyle(restartButton);
@@ -296,7 +291,6 @@ public class GameFrame extends JFrame {
                 new MainMenu();
             }
         });
-
         menuDialog.setVisible(true);
     }
 

@@ -12,11 +12,9 @@ public class MainMenu extends JFrame {
     private JButton exitButton;
 
     public MainMenu() {
-
         initComponents();//初始化组件
-        setupLayout();
-        setupEventHandlers();
-
+        setupLayout();//设置布局
+        setupEventHandlers();//设置事件处理
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("SOKOBAN V1.0");
@@ -117,12 +115,9 @@ public class MainMenu extends JFrame {
             }
         });
     }
-
-
+    
     private void showLevelSelection() {
         LevelSelectionDialog levelDialog = new LevelSelectionDialog(this);//this指MainMenu
         levelDialog.setVisible(true);
     }
-
-
 }

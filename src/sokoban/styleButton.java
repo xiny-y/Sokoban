@@ -19,7 +19,7 @@ public class styleButton {
                 g2.setPaint(gradient); // 浅色渐变
                 g2.fill(new RoundRectangle2D.Float(0, 0, c.getWidth(), c.getHeight(), 20, 20)); // 圆角矩形
 
-                super.paint(g, c);
+                super.paint(g, c);// 调用父类的绘制方法以绘制按钮文本
             }
         });
         button.setOpaque(false); // 设置按钮背景透明

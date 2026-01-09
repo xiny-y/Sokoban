@@ -46,18 +46,18 @@ public class GameFrame extends JFrame {
                 int boxNewY = boxPositions[b][1] + dy;
                 //检查箱子新位置是否为墙或其他箱子
                 if (map[boxNewX][boxNewY] == 1) {
-                    return; //箱子不能移动
+                    return;
                 }
                 for (int bb = 0; bb < boxPositions.length; bb++) {
                     if (bb != b && boxNewX == boxPositions[bb][0] && boxNewY == boxPositions[bb][1]) {
-                        return; //箱子不能移动
+                        return; 
                     }
                 }
                 //移动箱子
                 boxPositions[b][0] = boxNewX;
                 boxPositions[b][1] = boxNewY;
                 if (map[boxNewX][boxNewY] == 9 && !isWinning()) {
-                    //箱子放到目标位置
+                    //箱子到目标位置播放音效
                     try {
                         java.net.URL soundURL = getClass().getClassLoader().getResource("music/right.wav");
                         if (soundURL != null) {
@@ -73,11 +73,9 @@ public class GameFrame extends JFrame {
                 break;
             }
         }
-
-        //移动玩家
         px = newX;
         py = newY;
-        this.getContentPane().removeAll();//删除所有组件
+        this.getContentPane().removeAll();
         initImage();//重新绘制图片和菜单
         this.repaint();//刷新界面
         checkWin();
@@ -98,7 +96,7 @@ public class GameFrame extends JFrame {
 
     private void checkWin() {
         if(!isWinning()) return;
-        //所有箱子都在目标位置，获胜
+
         if (currentLevel < MAX_LEVEL) {
             playVictorySound("victory"); // 播放胜利音效
             JDialog levelDialog = new JDialog(this);
@@ -144,13 +142,13 @@ public class GameFrame extends JFrame {
 
             JLabel messageLabel = new JLabel("恭喜完成最后关卡！", SwingConstants.CENTER);
             messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
-            messageLabel.setBounds(20, 20, 240, 30); // 调整位置
+            messageLabel.setBounds(20, 20, 240, 30); 
             finishDialog.add(messageLabel);
 
             JButton mainMenuButton = new JButton("返回主菜单");
             mainMenuButton.setBounds(40, 70, 100, 30);
             styleButton.applyStyle(mainMenuButton);
-            mainMenuButton.addActionListener(e -> { //e 代表事件对象ActionEvent -> 事件源
+            mainMenuButton.addActionListener(e -> { 
                 finishDialog.dispose();
                 this.dispose();
                 new MainMenu();
@@ -198,7 +196,7 @@ public class GameFrame extends JFrame {
                 }
             }
         });
-        this.setFocusable(true);//获取焦点
+        this.setFocusable(true);
     }
     private void loadMap(int level) {
         //第一行为人物坐标，第二行为箱子个数num_box，2~num_box+1行为箱子坐标，剩下为地图
@@ -208,7 +206,7 @@ public class GameFrame extends JFrame {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourcePath))))
         {
             String line;
-            //人物
+            //人物坐标
             if ((line = reader.readLine()) != null) {
                 String[] parts = line.trim().split("\\s+");//按空格分割
                 px = Integer.parseInt(parts[0]);
@@ -235,7 +233,7 @@ public class GameFrame extends JFrame {
                 line = line.trim();
                 String[] numbers = line.split("\\s+");
                 for (int j = 0; j < numbers.length; j++) {
-                    map[i][j] = Integer.parseInt(numbers[j]);//parseInt 将字符串转换为整数
+                    map[i][j] = Integer.parseInt(numbers[j]);
                 }
                 i++;
             }
@@ -243,9 +241,8 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
 
-        int tileSize = 100; // 每个格子的大小（像素）
-        this.setSize(8 * tileSize, 6 * tileSize + 30); // 设置窗口大小
-        this.setLocationRelativeTo(null); // 窗口居中显示
+        this.setSize(800, 630); // 设置窗口大小
+        this.setLocationRelativeTo(null);
     }
 
     private void initMenuButton() {
@@ -256,7 +253,6 @@ public class GameFrame extends JFrame {
         menuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //弹出小界面菜单
                 MenuDialog();
             }
         });
@@ -268,7 +264,7 @@ public class GameFrame extends JFrame {
 
         JDialog menuDialog = new JDialog(this, "菜单", true);
         menuDialog.setSize(300, 150);
-        menuDialog.setLayout(null);//使用绝对布局
+        menuDialog.setLayout(null);
         menuDialog.setLocationRelativeTo(this);//居中显示
         menuDialog.setUndecorated(true);//删除标题栏
 
@@ -335,12 +331,6 @@ public class GameFrame extends JFrame {
 
         initMenuButton();//添加菜单按钮
 
-        String playerImagePath = IMAGE_PATH + "player.png"; // 默认玩家图片路径
-        java.io.File customPlayerImage = new java.io.File("src/resources/player_custom.png");
-        if (customPlayerImage.exists()) {
-            playerImagePath = "resources/player_custom.png"; // 如果存在自定义图片，使用自定义图片
-        }
-
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 String imageName = "";
@@ -356,7 +346,7 @@ public class GameFrame extends JFrame {
                         break;
                 }
                 if (i == px && j == py) {
-                    imageName = playerImagePath; // 使用玩家图片路径
+                    imageName = "player"; // 使用玩家图片路径
                 } else {
                     for (int b = 0; b < boxPositions.length; b++) {
                         if (i == boxPositions[b][0] && j == boxPositions[b][1]) {
@@ -371,13 +361,13 @@ public class GameFrame extends JFrame {
                 if (imageName.equals("place")) {
                     continue; // 空地不绘制图片
                 }
-                if (!imageName.equals(playerImagePath)) {
-                    imageName += ".png";
+                if (imageName.equals("player")) {
+                    java.net.URL playerURL = getClass().getClassLoader().getResource(IMAGE_PATH + "player_custom.png");
+                    if (playerURL != null) {
+                        imageName = "player_custom";
+                    }
                 }
-                java.net.URL imgURL = getClass().getClassLoader().getResource(IMAGE_PATH + imageName);
-                if (imageName.equals(playerImagePath)) {
-                    imgURL = getClass().getClassLoader().getResource(imageName);
-                }
+                java.net.URL imgURL = getClass().getClassLoader().getResource(IMAGE_PATH + imageName + ".png");
                 JLabel label = new JLabel(new ImageIcon(imgURL));
                 label.setBounds(j * 100, i * 100, 100, 100);
                 this.add(label);

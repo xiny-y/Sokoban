@@ -74,7 +74,7 @@ public class MainMenu extends JFrame {
         titleLabel.setFont(new Font("微软雅黑", Font.BOLD, 54)); // 调整标题字体大小为 54
         titlePanel.add(titleLabel);
         titlePanel.setOpaque(false); // 设置标题面板为透明
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // 调整标题的边距，避免被遮挡
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); 
         titlePanel.setBounds(0, 0, 800, 120); 
         layeredPane.add(titlePanel, JLayeredPane.PALETTE_LAYER);
 

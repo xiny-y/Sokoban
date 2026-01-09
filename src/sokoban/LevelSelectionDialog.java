@@ -22,7 +22,6 @@ public class LevelSelectionDialog extends JDialog {
     }
 
     private void initComponents() {
-        // 创建关卡按钮 (1-9关)
         levelButtons = new JButton[9];
         for (int i = 0; i < levelButtons.length; i++) {
             levelButtons[i] = new JButton("第 " + (i + 1) + " 关");

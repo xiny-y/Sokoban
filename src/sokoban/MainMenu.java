@@ -4,12 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 //游戏主菜单界面
 public class MainMenu extends JFrame {
     private JButton startButton;
     private JButton levelSelectButton;
     private JButton exitButton;
+    private JButton uploadCharacterButton; 
 
     public MainMenu() {
         initComponents();//初始化组件
@@ -21,7 +24,6 @@ public class MainMenu extends JFrame {
         setSize(800, 600);
         setResizable(false);//窗口大小不可改变
         setLocationRelativeTo(null);//窗口居中显示
-        //setUndecorated(true);//去除边框
         setVisible(true);
     }
 
@@ -29,6 +31,8 @@ public class MainMenu extends JFrame {
         startButton = new JButton("开始游戏");
         levelSelectButton = new JButton("选择关卡");
         exitButton = new JButton("退出游戏");
+        uploadCharacterButton = new JButton("自定义角色");
+        uploadCharacterButton.setFont(new Font("微软雅黑", Font.PLAIN, 10));
 
         // 设置按钮样式
         Font buttonFont = new Font("微软雅黑", Font.PLAIN, 24);
@@ -45,6 +49,7 @@ public class MainMenu extends JFrame {
         styleButton.applyStyle(startButton);
         styleButton.applyStyle(levelSelectButton);
         styleButton.applyStyle(exitButton);
+        styleButton.applyStyle(uploadCharacterButton);
     }
 
     private void setupLayout() {
@@ -70,7 +75,7 @@ public class MainMenu extends JFrame {
         titlePanel.add(titleLabel);
         titlePanel.setOpaque(false); // 设置标题面板为透明
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // 调整标题的边距，避免被遮挡
-        titlePanel.setBounds(0, 0, 800, 120); // 增加标题面板的高度
+        titlePanel.setBounds(0, 0, 800, 120); 
         layeredPane.add(titlePanel, JLayeredPane.PALETTE_LAYER);
 
         // 按钮面板
@@ -82,12 +87,15 @@ public class MainMenu extends JFrame {
         startButton.setBounds(200, 50, 400, 90);
         levelSelectButton.setBounds(200, 160, 400, 90);
         exitButton.setBounds(200, 270, 400, 90);
+        uploadCharacterButton.setBounds(680, 520, 100, 30);
 
         buttonPanel.add(startButton);
         buttonPanel.add(levelSelectButton);
         buttonPanel.add(exitButton);
+        buttonPanel.add(uploadCharacterButton); 
         buttonPanel.setBounds(0, 150, 800, 400);
         layeredPane.add(buttonPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(uploadCharacterButton, JLayeredPane.PALETTE_LAYER); 
 
         add(layeredPane, BorderLayout.CENTER);
     }
@@ -114,10 +122,135 @@ public class MainMenu extends JFrame {
                 System.exit(0);
             }
         });
+
+        uploadCharacterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                uploadCharacterImage();
+            }
+        });
     }
     
     private void showLevelSelection() {
-        LevelSelectionDialog levelDialog = new LevelSelectionDialog(this);//this指MainMenu
+        LevelSelectionDialog levelDialog = new LevelSelectionDialog(this);
         levelDialog.setVisible(true);
+    }
+
+    private void uploadCharacterImage() {
+        JDialog optionDialog = new JDialog(this, "选择操作", true);
+        optionDialog.setSize(300, 150);
+        optionDialog.setLayout(null);
+        optionDialog.setLocationRelativeTo(this);
+        optionDialog.setUndecorated(true);
+
+        JLabel messageLabel = new JLabel("请选择操作", SwingConstants.CENTER);
+        messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        messageLabel.setBounds(50, 20, 200, 30);
+        optionDialog.add(messageLabel);
+
+        JButton uploadButton = new JButton("上传图片");
+        uploadButton.setBounds(15, 70, 130, 40);
+        styleButton.applyStyle(uploadButton);
+        uploadButton.addActionListener(e -> {
+            optionDialog.dispose();
+            performUploadImage();
+        });
+        optionDialog.add(uploadButton);
+
+        JButton defaultButton = new JButton("使用默认角色");
+        defaultButton.setBounds(155, 70, 130, 40); 
+        styleButton.applyStyle(defaultButton);
+        defaultButton.addActionListener(e -> {
+            optionDialog.dispose();
+            useDefaultCharacter();
+        });
+        optionDialog.add(defaultButton);
+
+        optionDialog.setVisible(true);
+    }
+
+    private void performUploadImage() {
+        FileDialog fileDialog = new FileDialog(this, "选择角色图片", FileDialog.LOAD);
+        fileDialog.setVisible(true);
+        String directory = fileDialog.getDirectory();
+        String fileName = fileDialog.getFile();
+
+        if (directory != null && fileName != null) {
+            java.io.File file = new java.io.File(directory, fileName);
+            try {
+                java.nio.file.Path destination = java.nio.file.Paths.get("src/resources/player_custom.png");
+                BufferedImage originalImage = ImageIO.read(file);
+                int originalWidth = originalImage.getWidth();
+                int originalHeight = originalImage.getHeight();
+                int squareSize = Math.min(originalWidth, originalHeight);
+                int x = (originalWidth - squareSize) / 2;
+                int y = (originalHeight - squareSize) / 2;
+                BufferedImage croppedImage = originalImage.getSubimage(x, y, squareSize, squareSize);
+
+                int targetWidth = 100;
+                int targetHeight = 100;
+                BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = resizedImage.createGraphics();
+                g2d.drawImage(croppedImage, 0, 0, targetWidth, targetHeight, null);
+                g2d.dispose();
+                ImageIO.write(resizedImage, "png", destination.toFile());
+
+                showSuccessDialog("角色图片上传成功！");
+            } catch (Exception ex) {
+                showErrorDialog("上传失败: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void useDefaultCharacter() {
+        java.nio.file.Path destination = java.nio.file.Paths.get("src/resources/player_custom.png");
+        try {
+            java.nio.file.Files.deleteIfExists(destination);
+            showSuccessDialog("已切换为默认角色！");
+        } catch (Exception ex) {
+            showSuccessDialog("已切使用默认角色！"); 
+        }
+    }
+
+    private void showSuccessDialog(String message) {
+        JDialog successDialog = new JDialog(this, "操作成功", true);
+        successDialog.setSize(300, 120);
+        successDialog.setLayout(null);
+        successDialog.setLocationRelativeTo(this);
+        successDialog.setUndecorated(true);
+
+        JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
+        messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        messageLabel.setBounds(50, 20, 200, 30);
+        successDialog.add(messageLabel);
+
+        JButton okButton = new JButton("确定");
+        okButton.setBounds(100, 70, 100, 30);
+        styleButton.applyStyle(okButton);
+        okButton.addActionListener(e -> successDialog.dispose());
+        successDialog.add(okButton);
+
+        successDialog.setVisible(true);
+    }
+
+    private void showErrorDialog(String message) {
+        JDialog errorDialog = new JDialog(this, "操作失败", true);
+        errorDialog.setSize(300, 120);
+        errorDialog.setLayout(null);
+        errorDialog.setLocationRelativeTo(this);
+        errorDialog.setUndecorated(true);
+
+        JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
+        messageLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        messageLabel.setBounds(50, 20, 200, 30);
+        errorDialog.add(messageLabel);
+
+        JButton okButton = new JButton("确定");
+        okButton.setBounds(100, 70, 100, 30);
+        styleButton.applyStyle(okButton);
+        okButton.addActionListener(e -> errorDialog.dispose());
+        errorDialog.add(okButton);
+
+        errorDialog.setVisible(true);
     }
 }

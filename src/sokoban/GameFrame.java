@@ -56,9 +56,24 @@ public class GameFrame extends JFrame {
                 //移动箱子
                 boxPositions[b][0] = boxNewX;
                 boxPositions[b][1] = boxNewY;
+                if (map[boxNewX][boxNewY] == 9 && !isWinning()) {
+                    //箱子放到目标位置
+                    try {
+                        java.net.URL soundURL = getClass().getClassLoader().getResource("music/right.wav");
+                        if (soundURL != null) {
+                            javax.sound.sampled.AudioInputStream audioInputStream = javax.sound.sampled.AudioSystem.getAudioInputStream(soundURL);
+                            javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
+                            clip.open(audioInputStream);
+                            clip.start();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             }
         }
+
         //移动玩家
         px = newX;
         py = newY;
@@ -66,20 +81,26 @@ public class GameFrame extends JFrame {
         initImage();//重新绘制图片和菜单
         this.repaint();//刷新界面
         checkWin();
-
     }
-    private void checkWin() {
-        //检查所有箱子是否都在目标位置
-        for (int b = 0; b < boxPositions.length; b++) {
-            int x = boxPositions[b][0];
-            int y = boxPositions[b][1];
-            if (map[x][y] != 9) {
-                return; //有箱子不在目标位置，未获胜
+    private void playVictorySound(String soundFile) {
+        try {
+            java.net.URL soundURL = getClass().getClassLoader().getResource("music/" + soundFile + ".wav");
+            if (soundURL != null) {
+                javax.sound.sampled.AudioInputStream audioInputStream = javax.sound.sampled.AudioSystem.getAudioInputStream(soundURL);
+                javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
+    private void checkWin() {
+        if(!isWinning()) return;
         //所有箱子都在目标位置，获胜
-        if(currentLevel < MAX_LEVEL){
+        if (currentLevel < MAX_LEVEL) {
+            playVictorySound("victory"); // 播放胜利音效
             JDialog levelDialog = new JDialog(this);
             levelDialog.setSize(300, 120);
             levelDialog.setLayout(null);//使用绝对布局
@@ -114,6 +135,7 @@ public class GameFrame extends JFrame {
             levelDialog.setVisible(true);
         }
         else{
+            playVictorySound("victory"); // 播放胜利音效
             JDialog finishDialog = new JDialog(this);
             finishDialog.setSize(300, 120);
             finishDialog.setLayout(null);
@@ -313,6 +335,12 @@ public class GameFrame extends JFrame {
 
         initMenuButton();//添加菜单按钮
 
+        String playerImagePath = IMAGE_PATH + "player.png"; // 默认玩家图片路径
+        java.io.File customPlayerImage = new java.io.File("src/resources/player_custom.png");
+        if (customPlayerImage.exists()) {
+            playerImagePath = "resources/player_custom.png"; // 如果存在自定义图片，使用自定义图片
+        }
+
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 String imageName = "";
@@ -328,28 +356,43 @@ public class GameFrame extends JFrame {
                         break;
                 }
                 if (i == px && j == py) {
-                    imageName = "player";
-                } 
-                else {
+                    imageName = playerImagePath; // 使用玩家图片路径
+                } else {
                     for (int b = 0; b < boxPositions.length; b++) {
                         if (i == boxPositions[b][0] && j == boxPositions[b][1]) {
                             imageName = "box";
-                            if(map[i][j] == 9){
+                            if (map[i][j] == 9) {
                                 imageName = "box_correct";
                             }
                             break;
                         }
                     }
                 }
-                if(imageName.equals("place")){
-                    continue;//空地不绘制图片
+                if (imageName.equals("place")) {
+                    continue; // 空地不绘制图片
                 }
-                imageName += ".png";
+                if (!imageName.equals(playerImagePath)) {
+                    imageName += ".png";
+                }
                 java.net.URL imgURL = getClass().getClassLoader().getResource(IMAGE_PATH + imageName);
+                if (imageName.equals(playerImagePath)) {
+                    imgURL = getClass().getClassLoader().getResource(imageName);
+                }
                 JLabel label = new JLabel(new ImageIcon(imgURL));
                 label.setBounds(j * 100, i * 100, 100, 100);
                 this.add(label);
             }
         }
+    }
+
+    private boolean isWinning() {
+        for (int b = 0; b < boxPositions.length; b++) {
+            int x = boxPositions[b][0];
+            int y = boxPositions[b][1];
+            if (map[x][y] != 9) {
+                return false; // 有箱子不在目标位置
+            }
+        }
+        return true; // 所有箱子都在目标位置
     }
 }

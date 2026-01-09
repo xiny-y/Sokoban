@@ -57,18 +57,7 @@ public class GameFrame extends JFrame {
                 boxPositions[b][0] = boxNewX;
                 boxPositions[b][1] = boxNewY;
                 if (map[boxNewX][boxNewY] == 9 && !isWinning()) {
-                    //箱子到目标位置播放音效
-                    try {
-                        java.net.URL soundURL = getClass().getClassLoader().getResource("music/right.wav");
-                        if (soundURL != null) {
-                            javax.sound.sampled.AudioInputStream audioInputStream = javax.sound.sampled.AudioSystem.getAudioInputStream(soundURL);
-                            javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
-                            clip.open(audioInputStream);
-                            clip.start();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    playSound("right"); //箱子到目标位置播放音效
                 }
                 break;
             }
@@ -80,7 +69,7 @@ public class GameFrame extends JFrame {
         this.repaint();//刷新界面
         checkWin();
     }
-    private void playVictorySound(String soundFile) {
+    private void playSound(String soundFile) {
         try {
             java.net.URL soundURL = getClass().getClassLoader().getResource("music/" + soundFile + ".wav");
             if (soundURL != null) {
@@ -98,7 +87,7 @@ public class GameFrame extends JFrame {
         if(!isWinning()) return;
 
         if (currentLevel < MAX_LEVEL) {
-            playVictorySound("victory"); // 播放胜利音效
+            playSound("victory"); // 播放胜利音效
             JDialog levelDialog = new JDialog(this);
             levelDialog.setSize(300, 120);
             levelDialog.setLayout(null);//使用绝对布局
@@ -133,7 +122,7 @@ public class GameFrame extends JFrame {
             levelDialog.setVisible(true);
         }
         else{
-            playVictorySound("victory"); // 播放胜利音效
+            playSound("victory"); // 播放胜利音效
             JDialog finishDialog = new JDialog(this);
             finishDialog.setSize(300, 120);
             finishDialog.setLayout(null);
